@@ -1,0 +1,7 @@
+{
+  "name": "KeychainExample",
+  "displayName": "KeychainExample",
+  "android": {
+    "package": "com.oblador.keychain"
+  }
+}
