@@ -5,9 +5,11 @@ import {
   SegmentedControlIOS,
   StyleSheet,
   Text,
+  Alert,
   TextInput,
   TouchableHighlight,
   View,
+  ScrollView,
 } from 'react-native';
 
 import * as Keychain from 'react-native-keychain';
@@ -33,10 +35,9 @@ export default class KeychainExample extends Component {
 
   async save(accessControl) {
     try {
-      const key = 'username'
       await Keychain.setItem(
-        key,
         this.state.key,
+        this.state.value,
         { accessControl: this.state.accessControl }
       );
       this.setState({ key: '', value: '', status: 'Credentials saved!' });
@@ -47,8 +48,7 @@ export default class KeychainExample extends Component {
 
   async load() {
     try {
-      const key = 'username'
-      const credentials = await Keychain.getItem(key, { accessControl: this.state.accessControl });
+      const credentials = await Keychain.getItem(this.state.key, { accessControl: this.state.accessControl });
       console.debug("credentials"+credentials);
 
       if (credentials) {
@@ -62,16 +62,35 @@ export default class KeychainExample extends Component {
       this.setState({ status: 'Could not load credentials. ' + err });
     }
   }
+  async removekey() {
+    try {
+      const key = 'username'
+      const credentials = await Keychain.removeItem(this.state.key, { accessControl: this.state.accessControl });
+      console.debug("credentials"+credentials);
+
+      if (credentials) {
+        this.setState({ ...credentials, status: 'Credentials removed!' });
+      } else {
+        this.setState({ status: 'No credentials removed.' });
+      }
+    } catch (err) {
+      console.debug("credentialserrror"+err);
+
+      this.setState({ status: 'Could not remove credentials. ' + err });
+    }
+  }
 
   async reset() {
     try {
-      await Keychain.resetGenericPassword();
+      await Keychain.resetAll();
       this.setState({
         status: 'Credentials Reset!',
         key: '',
         value: '',
       });
     } catch (err) {
+      console.debug("Keychainerrror"+JSON.stringify(Keychain));
+
       this.setState({ status: 'Could not reset credentials, ' + err });
     }
   }
@@ -85,7 +104,7 @@ export default class KeychainExample extends Component {
         <View style={styles.content}>
           <Text style={styles.title}>Keychain Example</Text>
           <View style={styles.field}>
-            <Text style={styles.label}>Username</Text>
+            <Text style={styles.label}>Key</Text>
             <TextInput
               style={styles.input}
               autoFocus={true}
@@ -97,7 +116,7 @@ export default class KeychainExample extends Component {
             />
           </View>
           <View style={styles.field}>
-            <Text style={styles.label}>Password</Text>
+            <Text style={styles.label}>Value</Text>
             <TextInput
               style={styles.input}
               value={true}
@@ -170,6 +189,15 @@ export default class KeychainExample extends Component {
               </View>
             </TouchableHighlight>
           </View>
+          <View style={styles.buttons}>
+            <TouchableHighlight
+              onPress={() => this.removekey()}
+              style={styles.button}
+            >
+              <View style={styles.save}>
+                <Text style={styles.buttonText}>Removekey</Text>
+              </View>
+            </TouchableHighlight></View>
         </View>
       </KeyboardAvoidingView>
     );
