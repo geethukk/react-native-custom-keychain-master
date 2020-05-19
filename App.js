@@ -64,7 +64,6 @@ export default class KeychainExample extends Component {
   }
   async removekey() {
     try {
-      const key = 'username'
       const credentials = await Keychain.removeItem(this.state.key, { accessControl: this.state.accessControl });
       console.debug("credentials"+credentials);
 
@@ -89,7 +88,7 @@ export default class KeychainExample extends Component {
         value: '',
       });
     } catch (err) {
-      console.debug("Keychainerrror"+JSON.stringify(Keychain));
+     // console.debug("Keychainerrror"+JSON.stringify(Keychain));
 
       this.setState({ status: 'Could not reset credentials, ' + err });
     }
